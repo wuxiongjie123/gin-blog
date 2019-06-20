@@ -24,7 +24,7 @@ func GetTags(c *gin.Context) {
 
 	var state = -1
 	if arg := c.Query("state"); arg != "" {
-		state, _ = com.StrTo(arg).Int()
+		state = com.StrTo(arg).MustInt()
 		maps["state"] = state
 	}
 	var err error

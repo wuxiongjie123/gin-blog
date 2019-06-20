@@ -44,11 +44,13 @@ func ExistTagByName(name string) bool {
 	return false
 }
 
-func AddTag(name string, state int, createdBy string) bool {
-	db.Create(&Tag{
+func AddTag(name string, state int, createdBy string) error {
+	if err := db.Create(&Tag{
 		Name:      name,
 		State:     state,
 		CreatedBy: createdBy,
-	})
-	return true
+	}).Error; err!=nil {
+		return err
+	}
+	return nil
 }
