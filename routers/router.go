@@ -2,6 +2,7 @@ package routers
 
 import (
 	"gin-blog/pkg/setting"
+	"gin-blog/routers/api"
 	"gin-blog/routers/api/v1"
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +21,7 @@ func InitRouter() *gin.Engine {
 	//		"message": "test",
 	//	})
 	//})
+	r.GET("/auth", api.GetAuth)
 	apiv1 := r.Group("/api/v1")
 	{
 		apiv1.GET("/tags", v1.GetTags)
