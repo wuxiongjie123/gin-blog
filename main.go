@@ -3,14 +3,22 @@ package main
 import (
 	"context"
 	"fmt"
+	"gin-blog/models"
+	"gin-blog/pkg/logging"
 	"gin-blog/pkg/setting"
 	"gin-blog/routers"
-	"go-common/library/os/signal"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"time"
 )
+
+func init()  {
+	setting.Setup()
+	models.Setup()
+	logging.Setup()
+}
 
 func main() {
 	//router := gin.Default()
