@@ -41,7 +41,7 @@ func GetArticle(c *gin.Context) {
 	//	"msg":  e.GetMsg(code),
 	//	"data": data,
 	//})
-	appG := app.Gin{c}
+	appG := app.Gin{C: c}
 	id := com.StrTo(c.Param("id")).MustInt()
 	valid := validation.Validation{}
 	valid.Min(id, 1, "id").Message("ID必须大于0")
@@ -76,7 +76,7 @@ func GetArticle(c *gin.Context) {
 func GetArticles(c *gin.Context) {
 	//data := make(map[string]interface{})
 	//maps := make(map[string]interface{})
-	appG := app.Gin{c}
+	appG := app.Gin{C: c}
 	valid := validation.Validation{}
 
 	var state = -1
