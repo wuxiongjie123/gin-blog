@@ -28,7 +28,7 @@ func GetTags(c *gin.Context) {
 		maps["state"] = state
 	}
 	var err error
-	data["lists"],err = models.GetTags(util.GetPage(c), setting.PageSize, maps)
+	data["lists"],err = models.GetTags(util.GetPage(c), setting.AppSetting.PageSize, maps)
 	if err != nil{
 		return
 	}

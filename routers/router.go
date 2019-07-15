@@ -4,11 +4,13 @@ import (
 	_ "gin-blog/docs"
 	"gin-blog/middleware/jwt"
 	"gin-blog/pkg/setting"
+	"gin-blog/pkg/upload"
 	"gin-blog/routers/api"
 	"gin-blog/routers/api/v1"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"net/http"
 )
 
 func InitRouter() *gin.Engine {
@@ -18,17 +20,24 @@ func InitRouter() *gin.Engine {
 
 	r.Use(gin.Recovery())
 
-	gin.SetMode(setting.RunMode)
+	gin.SetMode(setting.ServerSetting.RunMode)
 
 	//r.GET("/test", func(c *gin.Context) {
 	//	c.JSON(200, gin.H{
 	//		"message": "test",
 	//	})
 	//})
+	// 前端访问图片
+	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
 	r.GET("/auth", api.GetAuth)
+	// 文档
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// 上传图片
+	r.POST("/upload",api.UploadImage)
+
 	apiv1 := r.Group("/api/v1")
 	apiv1.Use(jwt.JWT())
+	// 文章
 	{
 		apiv1.GET("/tags", v1.GetTags)
 		apiv1.POST("/tags", v1.AddTag)
