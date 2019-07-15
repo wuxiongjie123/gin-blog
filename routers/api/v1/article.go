@@ -120,6 +120,13 @@ func GetArticles(c *gin.Context) {
 	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
+type AddArticleForm struct {
+	TagID int `form:"tag_id" valid:"Required;Min(1)"`
+	Title string `form:"title" valid:"Required;MaxSize(100)"`
+	Desc string `form:"desc" valid:"Required;MaxSize(255)"`
+
+}
+
 // 新增文章
 func AddArticle(c *gin.Context) {
 	tagId := com.StrTo(c.Query("tag_id")).MustInt()
