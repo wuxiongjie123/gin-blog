@@ -121,55 +121,68 @@ func GetArticles(c *gin.Context) {
 }
 
 type AddArticleForm struct {
-	TagID int `form:"tag_id" valid:"Required;Min(1)"`
-	Title string `form:"title" valid:"Required;MaxSize(100)"`
-	Desc string `form:"desc" valid:"Required;MaxSize(255)"`
-
+	TagID         int    `form:"tag_id" valid:"Required;Min(1)"`
+	Title         string `form:"title" valid:"Required;MaxSize(100)"`
+	Desc          string `form:"desc" valid:"Required;MaxSize(255)"`
+	Content       string `form:"content" valid:"Required;MaxSize(65535)"`
+	CreatedBy     string `form:"created_by" valid:"Required"`
+	CoverImageUrl string `form:"cover_image_url" valid:"Required;MaxSize(255)"`
+	State         int    `form:"state" valid:"Range(0,1)"`
 }
 
 // 新增文章
 func AddArticle(c *gin.Context) {
-	tagId := com.StrTo(c.Query("tag_id")).MustInt()
-	title := c.Query("title")
-	desc := c.Query("desc")
-	content := c.Query("content")
-	createdBy := c.Query("created_by")
-	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
-
-	valid := validation.Validation{}
-	valid.Min(tagId, 1, "tag_id").Message("标签ID必须大于0")
-	valid.Required(title, "title").Message("标签不能为空")
-	valid.Required(desc, "desc").Message("简述不能为空")
-	valid.Required(content, "content").Message("内容不能为空")
-	valid.Required(createdBy, "created_by").Message("创建人不能为空")
-	valid.Range(state, 0, 1, "state").Message("状态只允许0或者1")
-
-	code := e.INVALID_PARAMS
-	if ! valid.HasErrors() {
-		if models.ExistTagById(tagId) {
-			data := make(map[string]interface{})
-			data["tag_id"] = tagId
-			data["title"] = title
-			data["desc"] = desc
-			data["content"] = content
-			data["created_by"] = createdBy
-			data["state"] = state
-
-			models.AddArticle(data)
-			code = e.SUCCESS
-		} else {
-			code = e.ERROR_NOT_EXIST_TAG
-		}
-	} else {
-		for _, err := range valid.Errors {
-			logging.Info("err.key: %s, err.message: %s", err.Key, err.Message)
-		}
+	//tagId := com.StrTo(c.Query("tag_id")).MustInt()
+	//title := c.Query("title")
+	//desc := c.Query("desc")
+	//content := c.Query("content")
+	//createdBy := c.Query("created_by")
+	//state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
+	//
+	//valid := validation.Validation{}
+	//valid.Min(tagId, 1, "tag_id").Message("标签ID必须大于0")
+	//valid.Required(title, "title").Message("标签不能为空")
+	//valid.Required(desc, "desc").Message("简述不能为空")
+	//valid.Required(content, "content").Message("内容不能为空")
+	//valid.Required(createdBy, "created_by").Message("创建人不能为空")
+	//valid.Range(state, 0, 1, "state").Message("状态只允许0或者1")
+	//
+	//code := e.INVALID_PARAMS
+	//if ! valid.HasErrors() {
+	//	if models.ExistTagById(tagId) {
+	//		data := make(map[string]interface{})
+	//		data["tag_id"] = tagId
+	//		data["title"] = title
+	//		data["desc"] = desc
+	//		data["content"] = content
+	//		data["created_by"] = createdBy
+	//		data["state"] = state
+	//
+	//		models.AddArticle(data)
+	//		code = e.SUCCESS
+	//	} else {
+	//		code = e.ERROR_NOT_EXIST_TAG
+	//	}
+	//} else {
+	//	for _, err := range valid.Errors {
+	//		logging.Info("err.key: %s, err.message: %s", err.Key, err.Message)
+	//	}
+	//}
+	//c.JSON(http.StatusOK, gin.H{
+	//	"code": code,
+	//	"msg":  e.GetMsg(code),
+	//	"data": make(map[string]interface{}),
+	//})
+	var (
+		appG = app.Gin{C:c}
+		form AddArticleForm
+	)
+	httpCode,errCode := app.BindAndValid(c,&form)
+	if errCode !=e.SUCCESS {
+		appG.Response(httpCode,errCode,nil)
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": make(map[string]interface{}),
-	})
+	tagService := tag_
 }
 
 // 修改文章

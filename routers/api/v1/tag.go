@@ -61,9 +61,11 @@ func AddTag(c *gin.Context) {
 
 	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
-		if !models.ExistTagByName(name){
-			code = e.SUCCESS
-			models.AddTag(name,state,createdBy)
+		if ok,err:=models.ExistTagByName(name);err!=nil{
+			if ok{
+				code = e.SUCCESS
+				models.AddTag(name,state,createdBy)
+			}
 		} else {
 			code = e.ERROR_EXIST_TAG
 		}
@@ -132,8 +134,10 @@ func DeleteTag(c *gin.Context) {
 	code := e.INVALID_PARAMS
 	if !valid.HasErrors(){
 		code = e.SUCCESS
-		if models.ExistTagById(id) {
-			models.DeleteTag(id)
+		if ok,err:=models.ExistTagById(id);err!=nil{
+			if ok {
+				_ = models.DeleteTag(id)
+			}
 		}else {
 			code = e.ERROR_NOT_EXIST_TAG
 		}
