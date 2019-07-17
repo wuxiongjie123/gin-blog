@@ -62,6 +62,8 @@ func (t *Tag) GetAll() ([]models.Tag, error) {
 		PageNum:  t.PageNum,
 		PageSize: t.PageSize,
 	}
+
+	// 先从redis中查,有返回没有写log
 	key := cache.GetTagsKey()
 	if gredis.Exists(key) {
 		data, err := gredis.Get(key)
@@ -73,6 +75,7 @@ func (t *Tag) GetAll() ([]models.Tag, error) {
 		}
 	}
 
+	// 数据库中查,如果,查询到然后保存到redis中
 	tags, err := models.GetTags(t.PageNum, t.PageSize, t.getMaps())
 	if err != nil {
 		return nil, err
