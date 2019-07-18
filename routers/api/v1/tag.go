@@ -82,6 +82,12 @@ func GetTags(c *gin.Context) {
 	})
 }
 
+type AddTagForm struct {
+	Name      string `form:"name" valid:"Required;MaxSize(100)"`
+	CreatedBy string `form:"created_by" valid:"required;MaxSize(100)"`
+	State     int    `form:"state" valid:"Range(0,1)"`
+}
+
 // @Summary 新增文章标签
 // @Produce  json
 // @Param name query string true "Name"
@@ -90,32 +96,59 @@ func GetTags(c *gin.Context) {
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/tags [post]
 func AddTag(c *gin.Context) {
-	name := c.Query("name")
-	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
-	createdBy := c.Query("created_by")
-	valid := validation.Validation{}
-	valid.Required(name, "name").Message("名称不能为空")
-	valid.MaxSize(name, 100, "name").Message("名称最长为100字符")
-	valid.Required(createdBy, "created_by").Message("创建人不能为空")
-	valid.MaxSize(createdBy, 100, "created_by").Message("创建人最长为100字符")
-	valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
+	//name := c.Query("name")
+	//state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
+	//createdBy := c.Query("created_by")
+	//valid := validation.Validation{}
+	//valid.Required(name, "name").Message("名称不能为空")
+	//valid.MaxSize(name, 100, "name").Message("名称最长为100字符")
+	//valid.Required(createdBy, "created_by").Message("创建人不能为空")
+	//valid.MaxSize(createdBy, 100, "created_by").Message("创建人最长为100字符")
+	//valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
+	//
+	//code := e.INVALID_PARAMS
+	//if !valid.HasErrors() {
+	//	if ok, err := models.ExistTagByName(name); err != nil {
+	//		if ok {
+	//			code = e.SUCCESS
+	//			models.AddTag(name, state, createdBy)
+	//		}
+	//	} else {
+	//		code = e.ERROR_EXIST_TAG
+	//	}
+	//}
+	//c.JSON(http.StatusOK, gin.H{
+	//	"code": code,
+	//	"msg":  e.GetMsg(code),
+	//	"data": make(map[string]string),
+	//})
+	var (
+		appG = app.Gin{C: c}
+		form AddTagForm
+	)
 
-	code := e.INVALID_PARAMS
-	if !valid.HasErrors() {
-		if ok, err := models.ExistTagByName(name); err != nil {
-			if ok {
-				code = e.SUCCESS
-				models.AddTag(name, state, createdBy)
-			}
-		} else {
-			code = e.ERROR_EXIST_TAG
-		}
+	httpCode, errCode := app.BindAndValid(c, &form)
+	if errCode != e.SUCCESS {
+		appG.Response(httpCode, errCode, nil)
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": make(map[string]string),
-	})
+
+	tagService := tag_service.Tag{
+		Name:      form.Name,
+		CreatedBy: form.CreatedBy,
+		State:     form.State,
+	}
+	exists,err := tagService.ExistByName()
+	if err!= nil{
+		appG.Response(http.StatusInternalServerError,e.ERROR_EXIST_TAG_FAIL,nil)
+		return
+	}
+	if exists {
+		appG.Response(http.StatusOK,e.ERROR_EXIST_TAG,nil)
+		return
+	}
+
+	err = tagService.Add()
 }
 
 // @Summary 修改文章标签
