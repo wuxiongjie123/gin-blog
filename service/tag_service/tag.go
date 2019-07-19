@@ -34,6 +34,10 @@ func (t *Tag) ExistByID() (bool, error) {
 	return models.ExistTagById(t.ID)
 }
 
+func (t *Tag) Add() error {
+	return models.AddTag(t.Name, t.State, t.CreatedBy)
+}
+
 func (t *Tag) Edit() error {
 	data := make(map[string]interface{})
 	data["modified_by"] = t.ModifiedBy
@@ -136,18 +140,18 @@ func (t *Tag) Export() (string, error) {
 }
 
 // 导入
-func (t *Tag)Import(r io.Reader) error {
-	xlsx,err :=excelize.OpenReader(r)
-	if err!=nil{
+func (t *Tag) Import(r io.Reader) error {
+	xlsx, err := excelize.OpenReader(r)
+	if err != nil {
 		return err
 	}
 
 	rows := xlsx.GetRows("标签信息")
-	for irow,row :=range rows{
-		if irow >0 {
+	for irow, row := range rows {
+		if irow > 0 {
 			var data []string
-			for _,cell :=range row{
-				data = append(data,cell)
+			for _, cell := range row {
+				data = append(data, cell)
 			}
 			_ = models.AddTag(data[1], 1, data[2])
 		}

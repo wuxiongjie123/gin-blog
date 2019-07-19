@@ -44,7 +44,7 @@ func updateTimeStampForUpdateCallback(scope *gorm.Scope) {
 func deleteCallback(scope *gorm.Scope) {
 	if !scope.HasError() {
 		var extraOption string
-		if str, ok := scope.Get("grom:delete_option"); ok {
+		if str, ok := scope.Get("gorm:delete_option"); ok {
 			extraOption = fmt.Sprint(str)
 		}
 		deleteOnField, hasDeleteOnField := scope.FieldByName("DeleteOn")

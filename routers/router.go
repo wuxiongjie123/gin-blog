@@ -39,10 +39,18 @@ func InitRouter() *gin.Engine {
 	apiv1.Use(jwt.JWT())
 	// 文章
 	{
+		// 获取标签
 		apiv1.GET("/tags", v1.GetTags)
+		// 添加标签
 		apiv1.POST("/tags", v1.AddTag)
+		// 修改标签
 		apiv1.PUT("/tags/:id", v1.EditTag)
+		// 删除标签
 		apiv1.DELETE("/tags/:id", v1.DeleteTag)
+		//导出标签
+		r.POST("/tags/export", v1.ExportTag)
+		//导入标签
+		r.POST("/tags/import", v1.ImportTag)
 
 		// 获取文章列表
 		apiv1.GET("/articles", v1.GetArticles)
