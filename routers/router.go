@@ -62,6 +62,8 @@ func InitRouter() *gin.Engine {
 		apiv1.PUT("/articles/:id", v1.EditArticle)
 		//删除指定文章
 		apiv1.DELETE("/articles/:id", v1.DeleteArticle)
+		//
+		apiv1.POST("/articles/poster/generate", v1.GenerateArticlePoster)
 
 	}
 

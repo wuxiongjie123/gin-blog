@@ -3,12 +3,14 @@ package v1
 import (
 	"gin-blog/pkg/app"
 	"gin-blog/pkg/e"
+	"gin-blog/pkg/qrcode"
 	"gin-blog/pkg/setting"
 	"gin-blog/pkg/util"
 	"gin-blog/service/article_service"
 	"gin-blog/service/tag_service"
 	"github.com/Unknwon/com"
 	"github.com/astaxie/beego/validation"
+	"github.com/boombuler/barcode/qr"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -381,4 +383,15 @@ func DeleteArticle(c *gin.Context) {
 		return
 	}
 	appG.Response(http.StatusOK,e.SUCCESS,nil)
+}
+
+const (
+	QRCODE_URL = ""
+)
+
+func GenerateArticlePoster(c *gin.Context)  {
+	appG := app.Gin{C:c}
+	article := &article_service.Article{}
+	qrc := qrcode.NewQrCode(QRCODE_URL,300,300,qr.M,qr.Auto)
+	posterName := article_service.
 }
